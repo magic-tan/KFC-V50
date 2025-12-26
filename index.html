@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>肯德基疯狂星期四文案生成器</title>
+    <title>KFC-V50 文案生成</title>
     <style>
         :root {
-            --kfc-red: #C41230;
-            --kfc-dark: #A30F28;
-            --bg-color: #Fdf5e6;
+            --kfc-red: #C41230; /* 肯德基标准红 */
+            --kfc-white: #FFFFFF;
+            --kfc-text: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background-color: var(--bg-color);
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: var(--kfc-red); /* 整体网页红色背景 */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -23,225 +28,208 @@
         }
 
         .container {
-            background: white;
             width: 100%;
-            max-width: 600px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(196, 18, 48, 0.15);
-            padding: 30px;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 顶部欢迎语 */
+        .top-notice {
+            color: var(--kfc-white);
             text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 40px;
+            max-width: 600px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        /* 大圆角白色卡片 */
+        .content-card {
+            background: var(--kfc-white);
+            width: 100%;
+            border-radius: 40px; /* 参考图片的大圆角设计 */
+            padding: 50px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            text-align: left;
             position: relative;
-            overflow: hidden;
-            border-top: 8px solid var(--kfc-red);
+            transition: transform 0.3s ease;
         }
 
         h1 {
             color: var(--kfc-red);
-            margin-bottom: 10px;
-            font-size: 24px;
+            font-size: clamp(24px, 5vw, 42px); /* 响应式字体大小 */
+            font-weight: 900; /* 极粗体 */
+            margin: 0 0 10px 0;
+            letter-spacing: -1px;
         }
 
         .subtitle {
             color: #666;
-            font-size: 14px;
+            font-size: 18px;
+            font-weight: 600;
             margin-bottom: 30px;
+            display: block;
         }
 
-        .content-box {
-            background-color: #FFF0F2;
-            padding: 20px;
-            border-radius: 8px;
+        .text-display {
+            font-size: clamp(16px, 2vw, 20px);
+            line-height: 1.8;
+            color: var(--kfc-text);
             min-height: 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            border: 2px dashed #ffcbd2;
-            position: relative;
+            margin-bottom: 40px;
+            white-space: pre-wrap; /* 解决换行排版 */
+            word-break: break-all;
+            border-top: 1px solid #eee;
+            padding-top: 25px;
         }
 
-        #text-content {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #333;
-            text-align: left;
-            white-space: pre-wrap; /* 保留换行符 */
-            width: 100%;
-        }
-
-        .btn-group {
+        /* 按钮设计 */
+        .button-group {
             display: flex;
-            gap: 15px;
-            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         button {
             border: none;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 16px 35px;
+            border-radius: 50px; /* 胶囊型按钮 */
+            font-size: 18px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            transition: all 0.2s ease;
         }
 
-        .btn-generate {
+        .btn-primary {
             background-color: var(--kfc-red);
-            color: white;
-            flex: 2;
-            justify-content: center;
+            color: var(--kfc-white);
         }
 
-        .btn-generate:hover {
-            background-color: var(--kfc-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(196, 18, 48, 0.3);
+        .btn-primary:hover {
+            background-color: #a00f28;
+            transform: scale(1.05);
         }
 
-        .btn-copy {
-            background-color: #fff;
+        .btn-secondary {
+            background-color: transparent;
             color: var(--kfc-red);
             border: 2px solid var(--kfc-red);
-            flex: 1;
-            justify-content: center;
         }
 
-        .btn-copy:hover {
-            background-color: #FFF0F2;
+        .btn-secondary:hover {
+            background-color: rgba(196, 18, 48, 0.05);
         }
 
-        /* 加载动画 */
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--kfc-red);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
+        /* 加载状态 */
+        #loader {
             display: none;
+            color: var(--kfc-red);
+            font-weight: bold;
+            font-style: italic;
+            animation: pulse 1s infinite;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
         }
 
-        /* 简单的 Toast 提示 */
+        /* Toast 提示框 */
         #toast {
             visibility: hidden;
-            min-width: 200px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 4px;
-            padding: 12px;
+            background: #333;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
             position: fixed;
-            z-index: 1;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
+            z-index: 1000;
+            font-weight: bold;
         }
 
         #toast.show {
             visibility: visible;
-            opacity: 1;
+            animation: fadeInUp 0.3s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        @media (max-width: 600px) {
+            .content-card { padding: 30px; border-radius: 30px; }
+            .button-group { flex-direction: column; width: 100%; }
+            button { width: 100%; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🍗 疯狂星期四文案生成器</h1>
-    <p class="subtitle">V 我 50，聆听我的复仇计划</p>
-
-    <div class="content-box">
-        <div class="loader" id="loader"></div>
-        <div id="text-content">点击下方按钮，随机生成一条疯四文案！</div>
+    <div class="top-notice">
+        在肯德基，我们致力于填满每个人的胃和灵魂。这种承诺引导着我们在每个周四发起疯狂的复仇计划。
     </div>
 
-    <div class="btn-group">
-        <button class="btn-generate" onclick="getKfcText()">
-            <span>🔄 换一个</span>
-        </button>
-        <button class="btn-copy" onclick="copyText()">
-            <span>📋 复制</span>
-        </button>
+    <div class="content-card">
+        <h1>KFC-V50文案生成</h1>
+        <span class="subtitle">疯狂星期四，复仇计划</span>
+
+        <div id="loader">正在获取疯狂细节...</div>
+        <div class="text-display" id="text-content">点击下方按钮，聆听我的复仇计划。</div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="getKfcText()">换一个计划</button>
+            <button class="btn-secondary" onclick="copyText()">复制文案</button>
+        </div>
     </div>
 </div>
 
-<div id="toast">已复制到剪贴板！</div>
+<div id="toast">已复制到剪贴板</div>
 
 <script>
-    // 接口地址
     const API_URL = 'https://api.pearktrue.cn/api/kfc?type=json';
-
     const textElement = document.getElementById('text-content');
     const loader = document.getElementById('loader');
 
-    // 获取文案函数
     async function getKfcText() {
-        // 显示加载动画，隐藏文字
         textElement.style.display = 'none';
         loader.style.display = 'block';
 
         try {
             const response = await fetch(API_URL);
-            
-            if (!response.ok) {
-                throw new Error('网络请求失败');
-            }
-
             const data = await response.json();
 
-            // 根据该接口通常的返回格式，内容通常在 'text' 字段中
-            // 如果接口返回格式发生变化，这里可能需要调整
             if (data && data.text) {
-                textElement.innerText = data.text;
-            } else {
-                textElement.innerText = "未获取到内容，请重试 (解析失败)";
-                console.log("API返回数据:", data);
+                // 彻底修复排版问题，将转义的 \n 转换为真实的换行符
+                textElement.innerText = data.text.replace(/\\n/g, '\n').trim();
             }
-
         } catch (error) {
-            console.error('Error:', error);
-            textElement.innerText = "获取失败，可能是接口挂了，也可能真的需要V我50修bug。";
+            textElement.innerText = "计划失败，V 我 50 重修服务器。";
         } finally {
-            // 隐藏加载动画，显示文字
             loader.style.display = 'none';
             textElement.style.display = 'block';
         }
     }
 
-    // 复制文案函数
     function copyText() {
         const text = textElement.innerText;
-        if (!text || text === "点击下方按钮，随机生成一条疯四文案！") {
-            showToast("还没有生成文案哦");
-            return;
-        }
-
         navigator.clipboard.writeText(text).then(() => {
-            showToast("复制成功！快去群里发！");
-        }).catch(err => {
-            showToast("复制失败，请手动复制");
+            const toast = document.getElementById('toast');
+            toast.className = 'show';
+            setTimeout(() => { toast.className = ''; }, 2500);
         });
     }
 
-    // 显示 Toast 提示
-    function showToast(message) {
-        const toast = document.getElementById("toast");
-        toast.innerText = message;
-        toast.className = "show";
-        setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
-    }
-    
-    // 页面加载完成后自动来一条
-    // window.onload = getKfcText; 
+    // 初始化加载一条
+    window.onload = getKfcText;
 </script>
 
 </body>
